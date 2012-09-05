@@ -51,7 +51,7 @@ public class RecordGenerator {
                 builder.append(prefixPadding(' ', fieldSpecification.length - value.length()));
                 builder.append(value);
             } else if (fieldSpecification.type == NUMERICAL) {
-                String value = Integer.toString((Integer) record.get(fieldSpecification.name));
+                String value = Long.toString((Long) record.get(fieldSpecification.name));
                 builder.append(prefixPadding('0', fieldSpecification.length - value.length()));
                 builder.append(value);
             } else {
