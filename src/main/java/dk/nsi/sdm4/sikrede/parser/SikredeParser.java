@@ -24,25 +24,10 @@
  */
 package dk.nsi.sdm4.sikrede.parser;
 
-import static java.lang.String.format;
-
-import java.io.File;
-import java.util.Iterator;
-import java.util.regex.Pattern;
-
-import javax.inject.Inject;
-
-import org.apache.commons.io.FileUtils;
-import org.apache.commons.io.LineIterator;
-import org.apache.log4j.MDC;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
-
 import com.google.common.base.Preconditions;
-
-
 import dk.nsi.sdm4.core.parser.Parser;
 import dk.nsi.sdm4.core.parser.ParserException;
+import dk.nsi.sdm4.core.parser.SingleLineRecordParser;
 import dk.nsi.sdm4.core.persistence.recordpersister.Record;
 import dk.nsi.sdm4.core.persistence.recordpersister.RecordPersister;
 import dk.nsi.sdm4.core.persistence.recordpersister.RecordSpecification;
@@ -50,6 +35,16 @@ import dk.nsi.sdm4.sikrede.brs.BrsUpdater;
 import dk.nsi.sdm4.sikrede.recordspecs.SikredeRecordSpecs;
 import dk.sdsd.nsp.slalog.api.SLALogItem;
 import dk.sdsd.nsp.slalog.api.SLALogger;
+import org.apache.commons.io.FileUtils;
+import org.apache.commons.io.LineIterator;
+import org.apache.log4j.MDC;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
+
+import java.io.File;
+import java.util.Iterator;
+
+import static java.lang.String.format;
 
 public class SikredeParser implements Parser {
 	// default settings, is overwritten by configuration
@@ -146,7 +141,7 @@ public class SikredeParser implements Parser {
                 }
 
                 if (!acceptedInterfaceId.equals(startRecord.get("SnitfladeId"))) {
-                    throw new ParserException(format("The interface id did not match the expected '%s'.", startRecord.get("SnitfladeId"), acceptedInterfaceId));
+                    throw new ParserException(format("The interface id '%s' did not match the expected '%s'.", startRecord.get("SnitfladeId"), acceptedInterfaceId));
                 }
             } else if (line.startsWith(RECORD_TYPE_END)) {
                 if (startRecord == null) throw new ParserException("Start record was not found before end record.");
