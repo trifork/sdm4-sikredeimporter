@@ -24,19 +24,20 @@
  */
 package dk.nsi.sdm4.sikrede.parser;
 
-import static dk.nsi.sdm4.core.persistence.recordpersister.RecordSpecification.field;
+import static dk.nsi.sdm4.core.persistence.recordpersister.FieldSpecification.RecordFieldType.ALPHANUMERICAL;
+import static dk.nsi.sdm4.core.persistence.recordpersister.FieldSpecification.RecordFieldType.NUMERICAL;
+import static dk.nsi.sdm4.core.persistence.recordpersister.FieldSpecification.field;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
+import dk.nsi.sdm4.core.persistence.recordpersister.FieldSpecification;
 import org.junit.Test;
 
 import com.google.common.collect.Iterables;
 
 import dk.nsi.sdm4.core.persistence.recordpersister.Record;
 import dk.nsi.sdm4.core.persistence.recordpersister.RecordSpecification;
-import dk.nsi.sdm4.core.persistence.recordpersister.RecordSpecification.FieldSpecification;
-import dk.nsi.sdm4.core.persistence.recordpersister.RecordSpecification.RecordFieldType;
 import dk.nsi.sdm4.sikrede.recordspecs.SikredeRecordSpecs;
 
 public class SikredeFieldsTest {
@@ -53,7 +54,7 @@ public class SikredeFieldsTest {
         int alphanumericalFields = 0;
 
         for (FieldSpecification spec : fieldSpecs) {
-            if (spec.type == RecordFieldType.ALPHANUMERICAL) {
+            if (spec.type == ALPHANUMERICAL) {
                 alphanumericalFields++;
             }
         }
@@ -67,7 +68,7 @@ public class SikredeFieldsTest {
 
         int numericalFields = 0;
         for (FieldSpecification spec : fieldSpecs) {
-            if (spec.type == RecordFieldType.NUMERICAL) {
+            if (spec.type == NUMERICAL) {
                 numericalFields++;
             }
         }

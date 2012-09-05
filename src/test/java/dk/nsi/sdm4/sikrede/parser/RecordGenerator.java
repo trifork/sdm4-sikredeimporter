@@ -24,11 +24,13 @@
  */
 package dk.nsi.sdm4.sikrede.parser;
 
+import static dk.nsi.sdm4.core.persistence.recordpersister.FieldSpecification.RecordFieldType.ALPHANUMERICAL;
+import static dk.nsi.sdm4.core.persistence.recordpersister.FieldSpecification.RecordFieldType.NUMERICAL;
 import static org.junit.Assert.assertTrue;
+
+import dk.nsi.sdm4.core.persistence.recordpersister.FieldSpecification;
 import dk.nsi.sdm4.core.persistence.recordpersister.Record;
 import dk.nsi.sdm4.core.persistence.recordpersister.RecordSpecification;
-import dk.nsi.sdm4.core.persistence.recordpersister.RecordSpecification.FieldSpecification;
-import dk.nsi.sdm4.core.persistence.recordpersister.RecordSpecification.RecordFieldType;
 
 public class RecordGenerator {
     private RecordSpecification recordSpecification;
@@ -44,11 +46,11 @@ public class RecordGenerator {
 
         StringBuilder builder = new StringBuilder();
         for (FieldSpecification fieldSpecification : recordSpecification.getFieldSpecs()) {
-            if (fieldSpecification.type == RecordSpecification.RecordFieldType.ALPHANUMERICAL) {
+            if (fieldSpecification.type == ALPHANUMERICAL) {
                 String value = (String) record.get(fieldSpecification.name);
                 builder.append(prefixPadding(' ', fieldSpecification.length - value.length()));
                 builder.append(value);
-            } else if (fieldSpecification.type == RecordSpecification.RecordFieldType.NUMERICAL) {
+            } else if (fieldSpecification.type == NUMERICAL) {
                 String value = Integer.toString((Integer) record.get(fieldSpecification.name));
                 builder.append(prefixPadding('0', fieldSpecification.length - value.length()));
                 builder.append(value);
@@ -62,9 +64,9 @@ public class RecordGenerator {
     public String stringFromIncompleteRecord(Record record) {
         for (FieldSpecification fieldSpecification : recordSpecification.getFieldSpecs()) {
             if (!record.containsKey(fieldSpecification.name)) {
-                if (fieldSpecification.type == RecordSpecification.RecordFieldType.ALPHANUMERICAL) {
+                if (fieldSpecification.type == ALPHANUMERICAL) {
                     record = record.put(fieldSpecification.name, "");
-                } else if (fieldSpecification.type == RecordFieldType.NUMERICAL) {
+                } else if (fieldSpecification.type == NUMERICAL) {
                     record = record.put(fieldSpecification.name, 0);
                 } else {
                     throw new AssertionError("Missing implementation for type " + fieldSpecification.type);
