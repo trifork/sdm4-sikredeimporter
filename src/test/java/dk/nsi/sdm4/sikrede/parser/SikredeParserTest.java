@@ -138,7 +138,7 @@ public class SikredeParserTest {
 
         StringBuilder builder = new StringBuilder();
 
-        builder.append(startGenerator.stringRecordFromIncompleteSetOfFields("PostType", 0, "Modt", "F053",
+        builder.append(startGenerator.stringRecordFromIncompleteSetOfFields("PostType", 0L, "Modt", "F053",
                 "SnitfladeId", "S1061023"));
         builder.append('\n');
 
@@ -149,7 +149,7 @@ public class SikredeParserTest {
             builder.append('\n');
         }
 
-        builder.append(endGenerator.stringRecordFromIncompleteSetOfFields("PostType", 99, "AntPost", records.length));
+        builder.append(endGenerator.stringRecordFromIncompleteSetOfFields("PostType", 99L, "AntPost", new Long(records.length)));
         builder.append('\n');
 
         File inbox = temporaryFolder.newFolder("foo");

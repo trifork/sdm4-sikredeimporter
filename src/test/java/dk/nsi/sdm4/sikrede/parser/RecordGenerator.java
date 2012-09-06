@@ -25,6 +25,7 @@
 package dk.nsi.sdm4.sikrede.parser;
 
 import static dk.nsi.sdm4.core.persistence.recordpersister.FieldSpecification.RecordFieldType.ALPHANUMERICAL;
+import static dk.nsi.sdm4.core.persistence.recordpersister.FieldSpecification.RecordFieldType.DECIMAL10_3;
 import static dk.nsi.sdm4.core.persistence.recordpersister.FieldSpecification.RecordFieldType.NUMERICAL;
 import static org.junit.Assert.assertTrue;
 
@@ -46,17 +47,21 @@ public class RecordGenerator {
 
         StringBuilder builder = new StringBuilder();
         for (FieldSpecification fieldSpecification : recordSpecification.getFieldSpecs()) {
-            if (fieldSpecification.type == ALPHANUMERICAL) {
-                String value = (String) record.get(fieldSpecification.name);
-                builder.append(prefixPadding(' ', fieldSpecification.length - value.length()));
-                builder.append(value);
-            } else if (fieldSpecification.type == NUMERICAL) {
-                String value = Long.toString((Long) record.get(fieldSpecification.name));
-                builder.append(prefixPadding('0', fieldSpecification.length - value.length()));
-                builder.append(value);
-            } else {
-                throw new AssertionError("Missing implementation for type " + fieldSpecification.type);
-            }
+	        try {
+		        if (fieldSpecification.type == ALPHANUMERICAL) {
+			        String value = (String) record.get(fieldSpecification.name);
+			        builder.append(prefixPadding(' ', fieldSpecification.length - value.length()));
+			        builder.append(value);
+		        } else if (fieldSpecification.type == NUMERICAL) {
+			        String value = Long.toString((Long) record.get(fieldSpecification.name));
+			        builder.append(prefixPadding('0', fieldSpecification.length - value.length()));
+			        builder.append(value);
+		        } else {
+			        throw new AssertionError("Missing implementation for type " + fieldSpecification.type);
+		        }
+	        } catch (RuntimeException e) {
+		        throw new RuntimeException("While getting " + fieldSpecification.name + " from record " + record, e);
+	        }
         }
         return builder.toString();
     }
@@ -67,7 +72,9 @@ public class RecordGenerator {
                 if (fieldSpecification.type == ALPHANUMERICAL) {
                     record = record.put(fieldSpecification.name, "");
                 } else if (fieldSpecification.type == NUMERICAL) {
-                    record = record.put(fieldSpecification.name, 0);
+                    record = record.put(fieldSpecification.name, 0L);
+                } else if (fieldSpecification.type == DECIMAL10_3) {
+	                record = record.put(fieldSpecification.name, 0.0);
                 } else {
                     throw new AssertionError("Missing implementation for type " + fieldSpecification.type);
                 }

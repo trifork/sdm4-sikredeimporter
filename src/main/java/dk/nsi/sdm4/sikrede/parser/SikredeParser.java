@@ -115,7 +115,7 @@ public class SikredeParser implements Parser {
         Record startRecord = null;
         Record endRecord = null;
 
-        int numRecords = 0;
+        long numRecords = 0;
 
         SingleLineRecordParser startRecordParser = new SingleLineRecordParser(SikredeRecordSpecs.START_RECORD_SPEC);
         SingleLineRecordParser endRecordParser = new SingleLineRecordParser(SikredeRecordSpecs.END_RECORD_SPEC);
