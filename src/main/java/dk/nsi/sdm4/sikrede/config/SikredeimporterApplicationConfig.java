@@ -19,9 +19,4 @@ public class SikredeimporterApplicationConfig {
 	public BrsUpdater brsUpdater() {
 		return new BrsUpdater();
 	}
-
-	@Bean
-	public RecordPersister persister() {
-		return new RecordPersister(Instant.now());
-	}
 }
