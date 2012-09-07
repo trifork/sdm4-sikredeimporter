@@ -52,10 +52,9 @@ public class BrsUpdater {
     public void updateRecord(Record record) throws SQLException {
         String hashedCpr = hashCpr((String) record.get("CPRnr"));
 
-        updateExistingRelationship(hashedCpr, (String) record.get("SYdernrGl"), parseSikredeRecordDate((String) record
-                .get("SIkraftDatoYderGl")), parseSikredeRecordDate((String) record.get("SIkraftDatoYder")));
-        insertRelationship(hashedCpr, (String) record.get("SYdernr"), parseSikredeRecordDate((String) record
-                .get("SIkraftDatoYder")), null);
+        updateExistingRelationship(hashedCpr, (String) record.get("SYdernrGl"), parseSikredeRecordDate(record
+                , "SIkraftDatoYderGl"), parseSikredeRecordDate(record, "SIkraftDatoYder"));
+        insertRelationship(hashedCpr, (String) record.get("SYdernr"), parseSikredeRecordDate(record, "SIkraftDatoYder"), null);
     }
 
     void updateExistingRelationship(String patientCpr, String doctorOrganisationIdentifier, DateTime assignedFrom,
@@ -107,10 +106,15 @@ public class BrsUpdater {
         }
     }
 
-    static DateTime parseSikredeRecordDate(String date) {
-        Preconditions.checkArgument(date.length() == 8);
-        return new DateTime(Integer.parseInt(date.substring(0, 4)), Integer.parseInt(date.substring(4, 6)), Integer
-                .parseInt(date.substring(6, 8)), 0, 0, 0);
+    static DateTime parseSikredeRecordDate(Record record, String key) {
+	    String date = (String) record.get(key);
+	    final int expectedLength = 8;
+	    Preconditions.checkArgument(date.length() == expectedLength, "Date '%s' with key %s from record %s has wrong length, expected %s", date, key, record, expectedLength);
+        return new DateTime(
+		        Integer.parseInt(date.substring(0, 4)),
+		        Integer.parseInt(date.substring(4, 6)),
+		        Integer.parseInt(date.substring(6, 8)),
+		        0, 0, 0);
     }
 
     private static final String SHA_1 = "SHA-1";

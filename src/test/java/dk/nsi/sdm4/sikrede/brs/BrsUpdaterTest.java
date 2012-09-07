@@ -25,6 +25,7 @@ package dk.nsi.sdm4.sikrede.brs;
  * National Board of e-Health (NSI). All Rights Reserved.
  */
 
+import dk.nsi.sdm4.core.persistence.recordpersister.Record;
 import dk.nsi.sdm4.sikrede.config.SikredeimporterApplicationConfig;
 import dk.nsi.sdm4.testutils.TestDbConfiguration;
 import org.joda.time.DateTime;
@@ -74,8 +75,12 @@ public class BrsUpdaterTest {
 
     @Test
     public void testParseSikredeRecordDate() {
-        DateTime parsedDate = BrsUpdater.parseSikredeRecordDate("20110507");
-        DateTime expectedDate = new DateTime(2011, 5, 7, 0, 0, 0);
+	    Record dateRecord = new Record();
+	    dateRecord.put("date", "20110507");
+
+	    DateTime parsedDate = BrsUpdater.parseSikredeRecordDate(dateRecord, "date");
+
+	    DateTime expectedDate = new DateTime(2011, 5, 7, 0, 0, 0);
         assertEquals(expectedDate, parsedDate);
     }
 
