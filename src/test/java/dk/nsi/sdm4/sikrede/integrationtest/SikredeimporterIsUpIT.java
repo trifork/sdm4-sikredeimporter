@@ -6,6 +6,6 @@ import org.junit.Test;
 public class SikredeimporterIsUpIT {
 	@Test
 	public void statusPageReturns200OK() throws Exception {
-		new StatuspageChecker().assertThatStatuspageReturns200OK("sikredeimporter");
+		new StatuspageChecker("sikredeimporter").assertThatStatuspageReturns200OK();
 	}
 }
