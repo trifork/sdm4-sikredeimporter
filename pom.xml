@@ -9,7 +9,7 @@
 
 	<artifactId>sikredeimporter</artifactId>
 	<packaging>war</packaging>
-	<version>4.1-SNAPSHOT</version>
+	<version>4.1</version>
 
    <distributionManagement>
         <repository>
@@ -38,7 +38,8 @@
         <url>scm:git:git@github.com:trifork/sdm4-sikredeimporter</url>
         <connection>scm:git:git@github.com:trifork/sdm4-sikredeimporter.git</connection>
         <developerConnection>scm:git:git@github.com:trifork/sdm4-sikredeimporter.git</developerConnection>
-    </scm>
+      <tag>sikredeimporter-4.1</tag>
+  </scm>
     <issueManagement>
         <system>JIRA</system>
         <url>https://jira.trifork.com/</url>
