@@ -1,4 +1,4 @@
-CREATE TABLE Sikrede (
+ CREATE TABLE IF NOT EXISTS Sikrede (
     PID BIGINT(15) AUTO_INCREMENT NOT NULL PRIMARY KEY,
     CPRnr VARCHAR(10),
     SYdernr VARCHAR(6),
@@ -56,7 +56,7 @@ CREATE TABLE Sikrede (
 -- This table is to be replicated to the BRS db schema.
 -- It is populated by stamdata, but not read by stamdata.
 --
-CREATE TABLE AssignedDoctor ( -- Sikrede
+ CREATE TABLE IF NOT EXISTS AssignedDoctor ( -- Sikrede
   pk bigint AUTO_INCREMENT NOT NULL,
 
     -- cpr numre er base64 af hashede numre
