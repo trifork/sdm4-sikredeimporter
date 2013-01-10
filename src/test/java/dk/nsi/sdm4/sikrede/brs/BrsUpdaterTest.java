@@ -111,6 +111,21 @@ public class BrsUpdaterTest {
     }
 
     @Test
+    public void parseSikredeRecordDateEpochIfEmpty() {
+        Record dateRecord = new Record();
+        dateRecord.put("date", "00000000");
+
+        DateTime parsedDate = BrsUpdater.parseSikredeRecordDateDefaultDateIfEmpty(dateRecord, "date");
+        assertEquals(1970, parsedDate.getYear());
+
+        dateRecord = new Record();
+        dateRecord.put("date", "20110507");
+        parsedDate = BrsUpdater.parseSikredeRecordDateDefaultDateIfEmpty(dateRecord, "date");
+        DateTime expectedDate = new DateTime(2011, 5, 7, 0, 0, 0);
+        assertEquals(expectedDate, parsedDate);
+    }
+
+    @Test
     public void testOpenRelationshipExistsWhenNoRecords() throws SQLException {
         assertEquals(BrsUpdater.NO_EXISTING_RELATIONSHIP, brsUpdater.openRelationshipExists(examplePatientCpr,
                 exampleDoctorOrganisationIdentifier));

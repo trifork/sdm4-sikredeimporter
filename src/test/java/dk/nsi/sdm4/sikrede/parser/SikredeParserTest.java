@@ -42,10 +42,8 @@ import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.io.File;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.OutputStreamWriter;
+import java.io.*;
+import java.net.URL;
 import java.sql.SQLException;
 
 import static org.junit.Assert.assertEquals;
@@ -101,7 +99,29 @@ public class SikredeParserTest {
 		parser.process(inbox);
 	}
 
-	private File setupExampleFile(Record... records) throws IOException {
+    @Test
+    public void testNewFileFormatWithInvalidDates() throws IOException {
+        File inbox = setupRealUdtraekTest();
+        parser.process(inbox);
+    }
+
+    private File setupRealUdtraekTest() throws IOException {
+        InputStream udtraekStream = SikredeParser.class.getClassLoader().getResourceAsStream("sikrede-udtraek-filtered.txt");
+        byte[] data = new byte[udtraekStream.available()];
+        udtraekStream.read(data);
+
+        File inbox =temporaryFolder.newFolder("udtraek");
+        File file = temporaryFolder.newFile("udtraek/sikrede-udtraek-filtered.txt");
+
+        FileOutputStream fileOutputStream = new FileOutputStream(file);
+        fileOutputStream.write(data);
+        fileOutputStream.flush();
+        fileOutputStream.close();
+
+        return inbox;
+    }
+
+    private File setupExampleFile(Record... records) throws IOException {
         RecordGenerator startGenerator = new RecordGenerator(SikredeRecordSpecs.START_RECORD_SPEC);
         RecordGenerator endGenerator = new RecordGenerator(SikredeRecordSpecs.END_RECORD_SPEC);
 

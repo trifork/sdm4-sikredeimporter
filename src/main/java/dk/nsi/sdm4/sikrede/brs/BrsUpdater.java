@@ -30,7 +30,6 @@ import org.joda.time.DateTime;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
-import org.springframework.jdbc.datasource.SingleConnectionDataSource;
 
 import com.google.common.base.Preconditions;
 
@@ -38,7 +37,6 @@ import dk.nsi.sdm4.core.persistence.recordpersister.Record;
 
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
-import java.sql.Connection;
 import java.sql.Date;
 import java.sql.SQLException;
 
@@ -54,13 +52,21 @@ public class BrsUpdater {
     public void updateRecord(Record record) throws SQLException {
         String hashedCpr = hashCpr((String) record.get("CPRnr"));
 
-        updateExistingRelationship(hashedCpr, (String) record.get("SYdernrGl"), parseSikredeRecordDate(record
-                , "SIkraftDatoYderGl"), parseSikredeRecordDate(record, "SIkraftDatoYder"));
-        insertRelationship(hashedCpr, (String) record.get("SYdernr"), parseSikredeRecordDate(record, "SIkraftDatoYder"), null);
+        updateExistingRelationship(hashedCpr,
+                (String) record.get("SYdernrGl"),
+                // The input was changed so we can now get a SIkraftDatoYderGl containing all zeroes, this indicates
+                // that the person always had the same doctor, so we return epoch as nulls is not allowed in db.
+                parseSikredeRecordDateDefaultDateIfEmpty(record, "SIkraftDatoYderGl"),
+                parseSikredeRecordDate(record, "SIkraftDatoYder"));
+        insertRelationship(hashedCpr,
+                (String) record.get("SYdernr"),
+                parseSikredeRecordDate(record, "SIkraftDatoYder"), null);
     }
 
-    void updateExistingRelationship(String patientCpr, String doctorOrganisationIdentifier, DateTime assignedFrom,
-            DateTime assignedTo) throws SQLException {
+    void updateExistingRelationship(String patientCpr,
+                                    String doctorOrganisationIdentifier,
+                                    DateTime assignedFrom,
+                                    DateTime assignedTo) throws SQLException {
         long primaryKeyFromExistingRelationship = openRelationshipExists(patientCpr, doctorOrganisationIdentifier);
         if (primaryKeyFromExistingRelationship == NO_EXISTING_RELATIONSHIP) {
             insertRelationship(patientCpr, doctorOrganisationIdentifier, assignedFrom, assignedTo);
@@ -108,10 +114,26 @@ public class BrsUpdater {
         }
     }
 
+    /**
+     * Parse a date, in case the input is all zeroes, epoch is returned.
+     * @param record
+     * @param key name of the key in the records that contains the date
+     * @return
+     */
+    static DateTime parseSikredeRecordDateDefaultDateIfEmpty(Record record, String key) {
+        String date = (String) record.get(key);
+        if (date.equals("00000000")) {
+            return new DateTime(0l);
+        } else {
+            return parseSikredeRecordDate(record, key);
+        }
+    }
+
     static DateTime parseSikredeRecordDate(Record record, String key) {
 	    String date = (String) record.get(key);
 	    final int expectedLength = 8;
-	    Preconditions.checkArgument(date.length() == expectedLength, "Date '%s' with key %s from record %s has wrong length, expected %s", date, key, record, expectedLength);
+	    Preconditions.checkArgument(date.length() == expectedLength,
+                "Date '%s' with key %s from record %s has wrong length, expected %s", date, key, record, expectedLength);
         return new DateTime(
 		        Integer.parseInt(date.substring(0, 4)),
 		        Integer.parseInt(date.substring(4, 6)),
