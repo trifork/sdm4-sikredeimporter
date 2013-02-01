@@ -100,6 +100,21 @@ public class SikredeParserTest {
 	}
 
     @Test
+    public void testSameDoctorTwice() throws IOException {
+        Object[] keysAndValues1 = {"PostType", 10L, "CPRnr", "1234567890", "SIkraftDatoYderGl", "00000000",
+                "SIkraftDatoYder", "19990101", "SYdernrGl", "000000", "SYdernr", "112233"};
+        Object[] keysAndValues2 = {"PostType", 10L, "CPRnr", "1234567890", "SIkraftDatoYderGl", "00000000",
+                "SIkraftDatoYder", "20000101", "SYdernrGl", "000000", "SYdernr", "112244"};
+        File inbox = setupExampleFile(
+                RecordGenerator.createRecord(keysAndValues1),
+                RecordGenerator.createRecord(keysAndValues2),
+                RecordGenerator.createRecord(keysAndValues1)
+        );
+
+        parser.process(inbox);
+    }
+
+    @Test
     public void testNewFileFormatWithInvalidDates() throws IOException {
         File inbox = setupRealUdtraekTest();
         parser.process(inbox);

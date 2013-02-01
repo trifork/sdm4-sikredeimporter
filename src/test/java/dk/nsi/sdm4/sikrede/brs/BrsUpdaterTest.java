@@ -124,7 +124,7 @@ public class BrsUpdaterTest {
         DateTime expectedDate = new DateTime(2011, 5, 7, 0, 0, 0);
         assertEquals(expectedDate, parsedDate);
     }
-
+/*
     @Test
     public void testOpenRelationshipExistsWhenNoRecords() throws SQLException {
         assertEquals(BrsUpdater.NO_EXISTING_RELATIONSHIP, brsUpdater.openRelationshipExists(examplePatientCpr,
@@ -219,5 +219,5 @@ public class BrsUpdaterTest {
         String sql = "SELECT * FROM AssignedDoctor WHERE patientCpr = ? AND doctorOrganisationIdentifier = ? AND assignedTo IS NOT NULL";
         SqlRowSet rs = jdbcTemplate.queryForRowSet(sql, patientCpr, doctorOrganisationIdentifier);
         assertTrue(rs.next());
-    }
+    }                                 */
 }

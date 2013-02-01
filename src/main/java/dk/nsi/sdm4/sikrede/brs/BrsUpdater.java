@@ -26,6 +26,7 @@
  */
 package dk.nsi.sdm4.sikrede.brs;
 
+import org.apache.log4j.Logger;
 import org.joda.time.DateTime;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.EmptyResultDataAccessException;
@@ -39,12 +40,14 @@ import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.sql.Date;
 import java.sql.SQLException;
+import java.util.List;
 
 public class BrsUpdater {
-    static final long NO_EXISTING_RELATIONSHIP = -1;
     
     @Autowired
     private JdbcTemplate jdbcTemplate;
+
+    private static final Logger log = Logger.getLogger(BrsUpdater.class);
 
     public BrsUpdater() {
     }
@@ -60,36 +63,39 @@ public class BrsUpdater {
                 parseSikredeRecordDate(record, "SIkraftDatoYder"));
         insertRelationship(hashedCpr,
                 (String) record.get("SYdernr"),
-                parseSikredeRecordDate(record, "SIkraftDatoYder"), null);
+                parseSikredeRecordDate(record, "SIkraftDatoYder"),
+                null);
     }
 
     void updateExistingRelationship(String patientCpr,
                                     String doctorOrganisationIdentifier,
                                     DateTime assignedFrom,
                                     DateTime assignedTo) throws SQLException {
-        long primaryKeyFromExistingRelationship = openRelationshipExists(patientCpr, doctorOrganisationIdentifier);
-        if (primaryKeyFromExistingRelationship == NO_EXISTING_RELATIONSHIP) {
+        List<Long> existingRelations = openRelationshipsExists(patientCpr, doctorOrganisationIdentifier);
+        if (existingRelations.size() > 0) {
+            log.debug("Found " + existingRelations.size() + " existing relationsships");
+        }
+        if (existingRelations == null || existingRelations.size() == 0) {
             insertRelationship(patientCpr, doctorOrganisationIdentifier, assignedFrom, assignedTo);
         } else {
-            closeRelationship(primaryKeyFromExistingRelationship, assignedTo);
+            closeRelationships(existingRelations, assignedTo);
         }
     }
 
-    long openRelationshipExists(String patientCpr, String doctorOrganisationIdentifier) throws SQLException {
+    List<Long> openRelationshipsExists(String patientCpr, String doctorOrganisationIdentifier) throws SQLException {
         String querySql = "SELECT pk FROM AssignedDoctor WHERE patientCpr = ? AND doctorOrganisationIdentifier = ? AND assignedTo IS NULL";
-        Long result;
         try {
-            result = jdbcTemplate.queryForLong(querySql, patientCpr, doctorOrganisationIdentifier);
+            return jdbcTemplate.queryForList(querySql, Long.class, patientCpr, doctorOrganisationIdentifier);
         } catch (EmptyResultDataAccessException norelation) {
-            result = NO_EXISTING_RELATIONSHIP;
+            return null;
         }
-
-        return result;
     }
 
-    void closeRelationship(long primaryKey, DateTime assignedTo) throws SQLException {
+    void closeRelationships(List<Long> keys, DateTime assignedTo) throws SQLException {
         String updateSql = "UPDATE AssignedDoctor SET assignedTo = ? WHERE pk = ?";
-        jdbcTemplate.update(updateSql, new Date(assignedTo.getMillis()), primaryKey);
+        for (Long key : keys) {
+            jdbcTemplate.update(updateSql, new Date(assignedTo.getMillis()), key);
+        }
     }
 
     void insertRelationship(String patientCpr, String doctorOrganisationIdentifier, DateTime assignedFrom,
