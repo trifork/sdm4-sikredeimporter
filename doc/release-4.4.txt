@@ -1,0 +1,5 @@
+SDM4-Sikredeimporter 4.4 Release Notes
+======================================
+sikredeimporter 4.4
+*  Løser NSPSUPPORT-167 fejlende import.
+   Det er løst ved at tillade flere samtidige behandlingsrelationer mellem patienter og læger.
