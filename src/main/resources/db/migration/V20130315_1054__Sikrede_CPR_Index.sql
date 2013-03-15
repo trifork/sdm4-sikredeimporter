@@ -1,0 +1,2 @@
+ALTER TABLE Sikrede
+ADD INDEX idxCpr (CPRnr ASC) ;
