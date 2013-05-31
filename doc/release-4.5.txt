@@ -1,4 +1,0 @@
-SDM4-Sikredeimporter 4.5 Release Notes
-======================================
-sikredeimporter 4.5
-*  SDM-19 Sikrede register mangler index på CPR-nummer - løst med en simpel database migrering.

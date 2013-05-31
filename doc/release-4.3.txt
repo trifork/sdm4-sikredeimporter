@@ -1,6 +1,0 @@
-
-SDM4-Sikredeimporter 4.3 Release Notes
-======================================
-
-* Fixed NSPSUPPORT-154 Grundet ændringer i input formatet kan SIkraftDatoYderGl indeholde udelukkende nuller i stedet for en korrekt dato, dette omgås nu ved at indsætte epoch dato i stedet for at fejle.
-

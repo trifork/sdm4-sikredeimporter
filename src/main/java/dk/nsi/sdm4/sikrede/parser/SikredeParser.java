@@ -80,8 +80,12 @@ public class SikredeParser implements Parser {
     }
 
     @Override
-    public void process(File dataSet) throws ParserException {
-        SLALogItem slaLogItem = slaLogger.createLogItem("SikredeParser", "dataSet");
+    public void process(File dataSet, String identifier) throws ParserException {
+        SLALogItem slaLogItem = slaLogger.createLogItem(getHome()+".process", "SDM4."+getHome()+".process");
+        slaLogItem.setMessageId(identifier);
+        if (dataSet != null) {
+            slaLogItem.addCallParameter(Parser.SLA_INPUT_NAME, dataSet.getAbsolutePath());
+        }
         try {
             File[] input = dataSet.listFiles();
             Preconditions.checkArgument(input.length == 1, "Only one file is expected at this point.");
@@ -93,14 +97,14 @@ public class SikredeParser implements Parser {
             // We can not do this yet as we do not know what the files are named.
 
             LineIterator lines = null;
-
+            long processed = 0;
             try {
                 lines = FileUtils.lineIterator(file, FILE_ENCODING);
-                importFile(lines, persister);
+                processed += importFile(lines, persister);
             } finally {
                 LineIterator.closeQuietly(lines);
             }
-
+            slaLogItem.addCallParameter(Parser.SLA_RECORDS_PROCESSED_MAME, ""+processed);
             slaLogItem.setCallResultOk();
             slaLogItem.store();
         } catch (Exception e) {
@@ -111,7 +115,7 @@ public class SikredeParser implements Parser {
         }
     }
 
-    private void importFile(Iterator<String> lines, RecordPersister persister) throws Exception {
+    private long importFile(Iterator<String> lines, RecordPersister persister) throws Exception {
         // A set containing all CPR numbers that have changed.
         //
         Record startRecord = null;
@@ -167,6 +171,7 @@ public class SikredeParser implements Parser {
         if (!endRecord.get("AntPost").equals(numRecords)) {
             throw new ParserException("The number of records that were parsed did not match the total from the end record.");
         }
+        return numRecords;
     }
 
     @Override

@@ -67,7 +67,7 @@ public class SikredeParserTest {
     public void testEmptyFile() throws Exception {
         File input = setupExampleFile();
 
-        parser.process(input);
+        parser.process(input, "");
         
         assertEquals(0, jdbcTemplate.queryForInt("SELECT Count(*) FROM " + recordSpecification.getTable()));
     }
@@ -81,7 +81,7 @@ public class SikredeParserTest {
 				RecordGenerator.createRecord(keysAndValues),
 				RecordGenerator.createRecord(keysAndValues));
 
-				parser.process(inbox);
+				parser.process(inbox, "");
 
 		assertNumberOfSikredeGeneratedRecordsInDatabaseIs(4, recordSpecification);
 	}
@@ -96,7 +96,7 @@ public class SikredeParserTest {
 				RecordGenerator.createRecord(keysAndValues)
 		);
 
-		parser.process(inbox);
+		parser.process(inbox, "");
 	}
 
     @Test
@@ -111,13 +111,13 @@ public class SikredeParserTest {
                 RecordGenerator.createRecord(keysAndValues1)
         );
 
-        parser.process(inbox);
+        parser.process(inbox, "");
     }
 
     @Test
     public void testNewFileFormatWithInvalidDates() throws IOException {
         File inbox = setupRealUdtraekTest();
-        parser.process(inbox);
+        parser.process(inbox, "");
     }
 
     private File setupRealUdtraekTest() throws IOException {
